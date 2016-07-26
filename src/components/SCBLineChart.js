@@ -7,6 +7,7 @@ class SCBLineChart extends React.Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     codes: PropTypes.array.isRequired,
+    debug: PropTypes.bool,
   };
 
   title = "";
@@ -136,8 +137,10 @@ class SCBLineChart extends React.Component {
     });
 
     //debug
-    for(var i =0; i<codeValues[0].valueTexts.length; i++){
-      // console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+    if(this.props.debug) {
+      for(var i =0; i<codeValues[0].valueTexts.length; i++){
+        console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+      }
     }
 
     if (index.length) {
@@ -157,7 +160,8 @@ class SCBLineChart extends React.Component {
       let ContentCategoryName = Object.keys(this.codeToValueTextDict.ContentsCode).map(val=>{return this.codeToValueTextDict.ContentsCode[val] + ' - '});
       let names = Object.keys(this.codeToValueTextDict.Region).map(val=>{return ' ' + this.codeToValueTextDict.Region[val]});
       return (<div>
-        <h4>{ContentCategoryName + this.title + ',' + names}</h4>
+        <h4>{ContentCategoryName + this.title}</h4>
+        <h5>{names}</h5>
         <Line data={this.state.chartData} options={{responsive: true}}/>
       </div>)
     } else {

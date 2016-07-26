@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {version} from '../../package.json';
+import SCBLineChart from './SCBLineChart';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,18 +12,19 @@ class App extends React.Component {
   };
 
   render() {
-    let regionIndexes = [177, 1, 0, 127];
-    let population = [{code: 'Region', index: regionIndexes}, {code: 'ContentsCode', index: [0]}, {code: 'Tid', index: []}];
-    let populationIncrease = [{code: 'Region', index: regionIndexes}, {code: 'ContentsCode', index: [1]}, {code: 'Tid', index: []}];
+    let regionIndexes = [177, 18, 127];
+    let notInWorkforce = [{code: 'Region', index: regionIndexes}, {code: 'ContentsCode', index: [0]}, {code: 'Tid', index: []}];
     return (
       <div>
         <header>
           <h1><Link to="/">Statistics</Link></h1>
           <Link to="/population">Population</Link>
-          <Link to="/poweredby">Powered by</Link>
+          <Link to="/workforce">Workforce</Link>
+          {/*<Link to="/poweredby">Powered by</Link>*/}
         </header>
         <section>
-          {this.props.children || 'Welcome to React Starterify'}
+          {this.props.children}
+          <SCBLineChart url="/HE/HE0104/TillgOversiktReg" codes={notInWorkforce}/>
         </section>
       </div>
     )
