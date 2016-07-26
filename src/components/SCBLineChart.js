@@ -7,14 +7,14 @@ class SCBLineChart extends React.Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     codes: PropTypes.array.isRequired,
-    title: PropTypes.string.isRequired
   };
 
+  title = "";
+  codeToValueTextDict = {};
   avg(arr = []) {return arr.reduce((a, b) => {return a + b}) / arr.length};
   makeDataSets(values = {'code':[]}) {
     let orderedkeys = Object.keys(values).sort((x,y)=>{return this.avg(values[y])-this.avg(values[x])});
     return orderedkeys.map((val, index)=>{
-      console.log("variable ", orderedkeys.length, index);
       let color = RandomColor.randomColor({
         luminosity: 'light',
         seed: this.codeToValueTextDict.Region[val]
@@ -38,7 +38,8 @@ class SCBLineChart extends React.Component {
   componentDidMount() {
     return this.get('get', this.props.url).then(
       res => {
-        console.log("variable ", res);
+        console.log("scb response ", res, res.title);
+        this.title = res.title;
         this.querySCB(this.props.url, this.props.codes, res.variables).then(res => {
           console.log('fun ', res);
           let chartData = {
@@ -125,7 +126,6 @@ class SCBLineChart extends React.Component {
     })
   }
 
-  codeToValueTextDict = {};
   getSeries(code, variables = [], index) {
     if (!variables.length) {
       return []
@@ -154,8 +154,9 @@ class SCBLineChart extends React.Component {
 
   render() {
     if (this.state) {
+      let names = Object.keys(this.codeToValueTextDict.Region).map(val=>{return ' ' + this.codeToValueTextDict.Region[val]});
       return (<div>
-        <h4>{this.props.title}</h4>
+        <h4>{this.title + ',' + names}</h4>
         <Line data={this.state.chartData} options={{responsive: true}}/>
       </div>)
     } else {
