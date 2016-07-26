@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {Line} from "react-chartjs";
+import RandomColor from "randomcolor";
 
 class SCBLineChart extends React.Component {
   static baseUrl = "https://api.scb.se/OV0104/v1/doris/sv/ssd";
@@ -9,33 +10,15 @@ class SCBLineChart extends React.Component {
     title: PropTypes.string.isRequired
   };
 
-  rainbow(numOfSteps, step) {
-    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
-    // Adam Cole, 2011-Sept-14
-    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-    var r, g, b;
-    var h = step / numOfSteps;
-    var i = ~~(h * 6);
-    var f = h * 6 - i;
-    var q = 1 - f;
-    switch(i % 6){
-      case 0: r = 1; g = f; b = 0; break;
-      case 1: r = q; g = 1; b = 0; break;
-      case 2: r = 0; g = 1; b = f; break;
-      case 3: r = 0; g = q; b = 1; break;
-      case 4: r = f; g = 0; b = 1; break;
-      case 5: r = 1; g = 0; b = q; break;
-    }
-    // var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
-    var d = "rgba(" + r * 255 + "," + g * 255 + "," + b * 255 + ",0.2)";
-    return (d);
-  }
-
   avg(arr = []) {return arr.reduce((a, b) => {return a + b}) / arr.length};
   makeDataSets(values = {'code':[]}) {
     let orderedkeys = Object.keys(values).sort((x,y)=>{return this.avg(values[y])-this.avg(values[x])});
     return orderedkeys.map((val, index)=>{
-      let color = this.rainbow(orderedkeys.length, index);
+      console.log("variable ", orderedkeys.length, index);
+      let color = RandomColor.randomColor({
+        luminosity: 'light',
+        seed: this.codeToValueTextDict.Region[val]
+      });
       return {
         label: this.codeToValueTextDict.Region[val],
         title: 'bajs2',
@@ -153,9 +136,9 @@ class SCBLineChart extends React.Component {
     });
 
     //debug
-    // for(var i =0; i<codeValues[0].valueTexts.length; i++){
-    //   console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
-    // }
+    for(var i =0; i<codeValues[0].valueTexts.length; i++){
+      console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+    }
 
     if (index.length) {
       return index.map(val => {

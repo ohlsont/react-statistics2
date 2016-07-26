@@ -41,6 +41,7 @@
   "dependencies": {
     "chart.js": "^1.1.1",
     "history": "^3.0.0",
+    "randomcolor": "^0.4.4",
     "react": "^15.2.1",
     "react-chartjs": "^0.7.3",
     "react-dom": "^15.2.1",

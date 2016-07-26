@@ -3,14 +3,14 @@ import { render } from 'react-dom';
 import { Router, Route, hashHistory } from 'react-router';
 import App from './components/App';
 import PoweredBy from './components/Powered-by';
-import About from './components/About';
+import Population from './components/population';
 
 window.React = React;
 
 render(
   (<Router history={hashHistory}>
     <Route path="/" component={App}>
-      <Route path="/about" component={About} />
+      <Route path="/population" component={Population} />
       <Route path="/poweredby" component={PoweredBy} />
     </Route>
   </Router>), document.getElementById('content')
