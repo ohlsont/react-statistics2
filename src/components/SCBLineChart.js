@@ -136,9 +136,9 @@ class SCBLineChart extends React.Component {
     });
 
     //debug
-    for(var i =0; i<codeValues[0].valueTexts.length; i++){
-      console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
-    }
+    // for(var i =0; i<codeValues[0].valueTexts.length; i++){
+    //   console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+    // }
 
     if (index.length) {
       return index.map(val => {
