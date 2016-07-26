@@ -30381,9 +30381,9 @@ var _App = require('./components/App');
 
 var _App2 = _interopRequireDefault(_App);
 
-var _PoweredBy = require('./components/Powered-by');
+var _workforce = require('./components/workforce');
 
-var _PoweredBy2 = _interopRequireDefault(_PoweredBy);
+var _workforce2 = _interopRequireDefault(_workforce);
 
 var _population = require('./components/population');
 
@@ -30400,11 +30400,11 @@ window.React = _react2.default;
     _reactRouter.Route,
     { path: '/', component: _App2.default },
     _react2.default.createElement(_reactRouter.Route, { path: '/population', component: _population2.default }),
-    _react2.default.createElement(_reactRouter.Route, { path: '/poweredby', component: _PoweredBy2.default })
+    _react2.default.createElement(_reactRouter.Route, { path: '/workforce', component: _workforce2.default })
   )
 ), document.getElementById('content'));
 
-},{"./components/App":247,"./components/Powered-by":248,"./components/population":250,"react":243,"react-dom":44,"react-router":74}],247:[function(require,module,exports){
+},{"./components/App":247,"./components/population":249,"./components/workforce":250,"react":243,"react-dom":44,"react-router":74}],247:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30420,6 +30420,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRouter = require('react-router');
 
 var _package = require('../../package.json');
+
+var _SCBLineChart = require('./SCBLineChart');
+
+var _SCBLineChart2 = _interopRequireDefault(_SCBLineChart);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30441,9 +30445,8 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: 'render',
     value: function render() {
-      var regionIndexes = [177, 1, 0, 127];
-      var population = [{ code: 'Region', index: regionIndexes }, { code: 'ContentsCode', index: [0] }, { code: 'Tid', index: [] }];
-      var populationIncrease = [{ code: 'Region', index: regionIndexes }, { code: 'ContentsCode', index: [1] }, { code: 'Tid', index: [] }];
+      var regionIndexes = [177, 18, 127];
+      var notInWorkforce = [{ code: 'Region', index: regionIndexes }, { code: 'ContentsCode', index: [0] }, { code: 'Tid', index: [] }];
       return _react2.default.createElement(
         'div',
         null,
@@ -30466,14 +30469,15 @@ var App = function (_React$Component) {
           ),
           _react2.default.createElement(
             _reactRouter.Link,
-            { to: '/poweredby' },
-            'Powered by'
+            { to: '/workforce' },
+            'Workforce'
           )
         ),
         _react2.default.createElement(
           'section',
           null,
-          this.props.children || 'Welcome to React Starterify'
+          this.props.children,
+          _react2.default.createElement(_SCBLineChart2.default, { url: '/HE/HE0104/TillgOversiktReg', codes: notInWorkforce })
         )
       );
     }
@@ -30487,36 +30491,7 @@ App.propTypes = {
 };
 exports.default = App;
 
-},{"../../package.json":245,"react":243,"react-router":74}],248:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _package = require('../../package.json');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var PoweredBy = function PoweredBy() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(
-      'h2',
-      null,
-      'Powered by'
-    )
-  );
-};
-
-exports.default = PoweredBy;
-
-},{"../../package.json":245,"react":243}],249:[function(require,module,exports){
+},{"../../package.json":245,"./SCBLineChart":248,"react":243,"react-router":74}],248:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -30718,8 +30693,10 @@ var SCBLineChart = function (_React$Component) {
       });
 
       //debug
-      for (var i = 0; i < codeValues[0].valueTexts.length; i++) {
-        // console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+      if (this.props.debug) {
+        for (var i = 0; i < codeValues[0].valueTexts.length; i++) {
+          console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i);
+        }
       }
 
       if (index.length) {
@@ -30751,7 +30728,12 @@ var SCBLineChart = function (_React$Component) {
           _react2.default.createElement(
             "h4",
             null,
-            ContentCategoryName + this.title + ',' + names
+            ContentCategoryName + this.title
+          ),
+          _react2.default.createElement(
+            "h5",
+            null,
+            names
           ),
           _react2.default.createElement(_reactChartjs.Line, { data: this.state.chartData, options: { responsive: true } })
         );
@@ -30776,11 +30758,12 @@ var SCBLineChart = function (_React$Component) {
 SCBLineChart.baseUrl = "https://api.scb.se/OV0104/v1/doris/sv/ssd";
 SCBLineChart.propTypes = {
   url: _react.PropTypes.string.isRequired,
-  codes: _react.PropTypes.array.isRequired
+  codes: _react.PropTypes.array.isRequired,
+  debug: _react.PropTypes.bool
 };
 exports.default = SCBLineChart;
 
-},{"randomcolor":35,"react":243,"react-chartjs":36}],250:[function(require,module,exports){
+},{"randomcolor":35,"react":243,"react-chartjs":36}],249:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30852,7 +30835,66 @@ var Population = function (_React$Component) {
 
 exports.default = Population;
 
-},{"./SCBLineChart":249,"react":243}]},{},[246])
+},{"./SCBLineChart":248,"react":243}],250:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _SCBLineChart = require('./SCBLineChart');
+
+var _SCBLineChart2 = _interopRequireDefault(_SCBLineChart);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Workforce = function (_React$Component) {
+  _inherits(Workforce, _React$Component);
+
+  function Workforce() {
+    _classCallCheck(this, Workforce);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(Workforce).apply(this, arguments));
+  }
+
+  _createClass(Workforce, [{
+    key: 'render',
+    value: function render() {
+      var regionIndexes = [1, 12];
+      var notInWorkforce = [{ code: 'Region', index: regionIndexes }, { code: 'ContentsCode', index: [1] }, { code: 'Tid', index: [] }];
+      var totalPeople = [{ code: 'Region', index: regionIndexes }, { code: 'ContentsCode', index: [2] }, { code: 'Tid', index: [] }];
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'h2',
+          null,
+          'Work force'
+        ),
+        _react2.default.createElement(_SCBLineChart2.default, { url: '/AM/AM9906/AM9906B/RegionIndU1b', codes: notInWorkforce }),
+        _react2.default.createElement(_SCBLineChart2.default, { url: '/AM/AM9906/AM9906B/RegionIndU1b', codes: totalPeople, debug: true })
+      );
+    }
+  }]);
+
+  return Workforce;
+}(_react2.default.Component);
+
+exports.default = Workforce;
+
+},{"./SCBLineChart":248,"react":243}]},{},[246])
 
 
 //# sourceMappingURL=app.js.map
