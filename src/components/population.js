@@ -3,7 +3,7 @@ import SCBLineChart from './SCBLineChart';
 
 export default class Population extends React.Component {
   state = {
-    regionIndexes: [177, 1, 0, 127]
+    regionIndexes: [177, 18, 127]
   };
 
   render() {
