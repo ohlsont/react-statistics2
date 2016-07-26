@@ -13,7 +13,8 @@ class App extends React.Component {
   };
 
   render() {
-    let codes = [{code: 'Region', index: [177, 1, 0]}, {code: 'ContentsCode', index: [0]}, {code: 'Tid', index: []}];
+    let population = [{code: 'Region', index: [177, 1, 0]}, {code: 'ContentsCode', index: [0]}, {code: 'Tid', index: []}];
+    let populationIncrease = [{code: 'Region', index: [177, 1, 0]}, {code: 'ContentsCode', index: [1]}, {code: 'Tid', index: []}];
     return (
       <div>
         <header>
@@ -21,7 +22,8 @@ class App extends React.Component {
           <Link to="/about">About</Link>
           <Link to="/poweredby">Powered by</Link>
         </header>
-        <SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={codes}/>
+        <SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={population} title={'Befolkning Göteborg, Stockholm, Riket'}/>
+        <SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={populationIncrease} title={'Befolkningsökning Göteborg, Stockholm, Riket'}/>
         {/*<Dropdown options={this.options} placeholder="Select an option" />*/}
         <section>
           {this.props.children || 'Welcome to React Starterify'}

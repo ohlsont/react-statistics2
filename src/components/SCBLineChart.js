@@ -1,45 +1,12 @@
 import React, {PropTypes} from 'react';
 import {Line} from "react-chartjs";
 
-class Color {
-  static interpolate(start, end, steps, count) {
-    var s = start,
-      e = end,
-      final = s + (((e - s) / steps) * count);
-    return Math.floor(final);
-  }
-
-  static getColorString(index, steps) {
-    console.log("variable ",index, steps);
-    let red = [232, 9, 26];
-    let white = [255, 255, 255];
-    let green = [6, 170, 60];
-    let start = green;
-    let end = white;
-
-    return Color.getColor(index, steps, start, end)
-  }
-
-  static getColor(index, steps, start, end) {
-    if (index > steps) {
-      start = white;
-      end = red;
-      index = index % (steps + 1);
-    }
-    var startColors = start, endColors = end;
-    var r = Color.interpolate(startColors[0], endColors[0], steps, index);
-    var g = Color.interpolate(startColors[1], endColors[1], steps, index);
-    var b = Color.interpolate(startColors[2], endColors[2], steps, index);
-
-    return "rgba(" + r + "," + g + "," + b + ",0.2)"
-  }
-}
-
 class SCBLineChart extends React.Component {
   static baseUrl = "https://api.scb.se/OV0104/v1/doris/sv/ssd";
   static propTypes = {
     url: PropTypes.string.isRequired,
-    codes: PropTypes.array.isRequired
+    codes: PropTypes.array.isRequired,
+    title: PropTypes.string.isRequired
   };
 
   rainbow(numOfSteps, step) {
@@ -64,14 +31,21 @@ class SCBLineChart extends React.Component {
     return (d);
   }
 
+  avg(arr = []) {return arr.reduce((a, b) => {return a + b}) / arr.length};
   makeDataSets(values = {'code':[]}) {
-    const len = Object.keys(values).length;
-    return Object.keys(values).map((val, index)=>{
+    let orderedkeys = Object.keys(values).sort((x,y)=>{return this.avg(values[y])-this.avg(values[x])});
+    return orderedkeys.map((val, index)=>{
+      let color = this.rainbow(orderedkeys.length, index);
       return {
-        label: val,
+        label: this.codeToValueTextDict.Region[val],
         title: 'bajs2',
         tooltipTemplate: "bajs",
-        fillColor: this.rainbow(len, index),
+        fillColor: color,
+        strokeColor: color,
+        pointColor: color,
+        pointStrokeColor: color,
+        pointHighlightFill: color,
+        pointHighlightStroke: color,
         data: values[val],
         borderWidth: 3
       }
@@ -105,6 +79,7 @@ class SCBLineChart extends React.Component {
     codes.map(val => {
       codeMap[val.code] = this.getSeries(val.code, variables, val.index);
     });
+
     let queries = Object.keys(codeMap).map(key => {
       return {
         "code": key,
@@ -136,7 +111,7 @@ class SCBLineChart extends React.Component {
         let allValues = {};
         resp.data.map(val => {
           if(!allValues[val.key[i]]) {allValues[val.key[i]] = []}
-          allValues[val.key[i]].push(val.values[i])
+          allValues[val.key[i]].push(parseInt(val.values[i]) || 0)
         });
         res[resp.columns[i].code] = {};
         res[resp.columns[i].code].keys = allKeys;
@@ -167,22 +142,27 @@ class SCBLineChart extends React.Component {
     })
   }
 
+  codeToValueTextDict = {};
   getSeries(code, variables = [], index) {
     if (!variables.length) {
       return []
     }
-    let codeValues = variables.filter(val => {
+
+    let codeValues = variables.filter((val, index) => {
       return val.code == code
     });
 
     //debug
-    for(var i =0; i<codeValues[0].valueTexts.length; i++){
-      console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
-    }
+    // for(var i =0; i<codeValues[0].valueTexts.length; i++){
+    //   console.log(code, codeValues[0].valueTexts[i], codeValues[0].values[i], 'HAS INDEX ' + i)
+    // }
 
     if (index.length) {
       return index.map(val => {
-        return codeValues[0].values[val]
+        if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
+        let valueCode = codeValues[0].values[val];
+        this.codeToValueTextDict[code][valueCode] = codeValues[0].valueTexts[val];
+        return valueCode
       })
     }
 
@@ -192,7 +172,7 @@ class SCBLineChart extends React.Component {
   render() {
     if (this.state) {
       return (<div>
-        <h4>{this.state.title}</h4>
+        <h4>{this.props.title}</h4>
         <Line data={this.state.chartData} options={{responsive: true}}/>
       </div>)
     } else {
