@@ -1,5 +1,5 @@
 import React from 'react';
-import SCBLineChart from './SCBLineChart';
+import SCBLineChart from '../components/SCBLineChart';
 
 export default class Workforce extends React.Component {
   render() {

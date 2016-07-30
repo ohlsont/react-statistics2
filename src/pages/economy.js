@@ -1,5 +1,5 @@
 import React from 'react';
-import SCBLineChart from './SCBLineChart';
+import SCBLineChart from '../components/SCBLineChart';
 import Code from "../types/code";
 
 export default class Economy extends React.Component {

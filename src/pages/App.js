@@ -1,7 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {version} from '../../package.json';
-import SCBLineChart from './SCBLineChart';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -20,7 +19,7 @@ export default class App extends React.Component {
           <Link to="/population">Population</Link>
           <Link to="/workforce">Workforce</Link>
           <Link to="/economy">Economy</Link>
-          {/*<Link to="/poweredby">Powered by</Link>*/}
+          <Link to="/taxes">Taxes</Link>
         </header>
         <section>
           {this.props.children || 'Go to sub directories for data'}

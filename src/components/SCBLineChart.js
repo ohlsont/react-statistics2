@@ -170,7 +170,7 @@ class SCBLineChart extends React.Component {
       let ContentCategoryName = Object.keys(this.codeToValueTextDict.ContentsCode).map(val=>{return this.codeToValueTextDict.ContentsCode[val] + ' - '});
       let n = Object.keys(this.codeToValueTextDict).map(code => {
         let nn = Object.keys(this.codeToValueTextDict[code]).map((val, index)=>{return (index ? ', ' :'') + this.codeToValueTextDict[code][val]});
-        let style = {'display':'inline-block', 'margin': '0em 1em 0em 1em'};
+        let style = {'display':'inline-block', 'margin': '0em 1em 0em 1em', 'max-width': '40%'};
         return <li key={code} style={style}>
                 <h5>{code}: </h5>
                 <h6>{nn}</h6>
