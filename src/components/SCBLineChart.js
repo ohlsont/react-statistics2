@@ -10,10 +10,15 @@ class SCBLineChart extends React.Component {
     debug: PropTypes.bool,
   };
 
+  //title
   title = "";
-  codeToValueTextDict = {};
-  avg(arr = []) {return arr.reduce((a, b) => {return a + b}) / arr.length};
-  makeDataSets(values = {'code':[]}) {
+  codeToValueTextDict = {}; //save names
+
+  avg(arr = []) {
+    return arr.reduce((a, b) => {return a + b}) / arr.length
+  };
+
+  makeChartData(values = {'code':[]}) {
     let orderedkeys = Object.keys(values).sort((x,y)=>{return this.avg(values[y])-this.avg(values[x])});
     return orderedkeys.map((val, index)=>{
       let color = RandomColor.randomColor({
@@ -42,12 +47,12 @@ class SCBLineChart extends React.Component {
         console.log("scb response ", res, res.title);
         this.title = res.title;
         this.querySCB(this.props.url, this.props.codes, res.variables).then(res => {
-          console.log('fun ', res);
+          console.log('Restructured query answer ', res, this.codeToValueTextDict);
           let chartData = {
             type: 'line',
             fill: false,
             labels: res.Tid.keys.splice(0,res.Tid.keys.length/ Object.keys(res.Region.values).length),
-            datasets: this.makeDataSets(res.Region.values)
+            datasets: this.makeChartData(res.Region.values)
           };
           console.log("variable setting chartData", chartData);
           this.setState({chartData: chartData});
@@ -87,6 +92,7 @@ class SCBLineChart extends React.Component {
     let data = this.makeQuerySCB(codes, variables);
     console.log("variable sending", data);
     return this.get('post', url, data).then(resp => {
+      console.log('\n==================== query done! ====================\n');
       console.log("got query answer ", resp);
       var res = {};
       for (var i = 0; i < resp.columns.length; i++) {
@@ -132,7 +138,7 @@ class SCBLineChart extends React.Component {
       return []
     }
 
-    let codeValues = variables.filter((val, index) => {
+    let codeValues = variables.filter((val) => {
       return val.code == code
     });
 
@@ -145,23 +151,35 @@ class SCBLineChart extends React.Component {
 
     if (index.length) {
       return index.map(val => {
-        if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
         let valueCode = codeValues[0].values[val];
+        if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
         this.codeToValueTextDict[code][valueCode] = codeValues[0].valueTexts[val];
         return valueCode
       })
     }
 
-    return codeValues[0].values
+    return codeValues[0].values.map((val, index)=> {
+      if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
+      this.codeToValueTextDict[code][val] = codeValues[0].valueTexts[index];
+      return val
+    });
   }
 
   render() {
     if (this.state) {
       let ContentCategoryName = Object.keys(this.codeToValueTextDict.ContentsCode).map(val=>{return this.codeToValueTextDict.ContentsCode[val] + ' - '});
       let names = Object.keys(this.codeToValueTextDict.Region).map(val=>{return ' ' + this.codeToValueTextDict.Region[val]});
+      let n = Object.keys(this.codeToValueTextDict).map(code => {
+        let nn = Object.keys(this.codeToValueTextDict[code]).map(val=>{return ' ' + this.codeToValueTextDict[code][val]});
+        let style = {'display':'inline-block', 'margin': '0em 1em 0em 1em'};
+        return <li key={code} style={style}>
+                <h5>{code}: </h5>
+                <h6>{nn}</h6>
+              </li>
+      });
       return (<div>
         <h4>{ContentCategoryName + this.title}</h4>
-        <h5>{names}</h5>
+        <ul>{n}</ul>
         <Line data={this.state.chartData} options={{responsive: true}}/>
       </div>)
     } else {

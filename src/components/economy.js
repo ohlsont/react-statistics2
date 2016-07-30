@@ -1,0 +1,31 @@
+import React from 'react';
+import SCBLineChart from './SCBLineChart';
+import Code from "../types/code";
+
+export default class Economy extends React.Component {
+
+  render() {
+    var regionIndexes = [177, 18, 127];
+    return (<div>
+      <h2>{this.constructor.name}</h2>
+      <SCBLineChart url="/HE/HE0104/TillgOversiktReg" codes={[
+        new Code('Region', regionIndexes),
+        new Code('ContentsCode', [0]),
+        new Code('TillgangSkuld', [18]),
+        new Code('Tid')
+      ]}/>
+      <SCBLineChart url="/HE/HE0104/TillgOversiktReg" codes={[
+        new Code('Region', regionIndexes),
+        new Code('ContentsCode', [3]),
+        new Code('TillgangSkuld', [18]),
+        new Code('Tid')
+      ]}/>
+      <SCBLineChart url="/HE/HE0104/TillgOversiktReg" codes={[
+        new Code('Region', regionIndexes),
+        new Code('ContentsCode', [3]),
+        new Code('TillgangSkuld', [18]),
+        new Code('Tid')
+      ]}/>
+    </div>)
+  }
+}
