@@ -14,24 +14,24 @@ export default class Population extends React.Component {
     return (<div>
       <h2>Population</h2>
       <SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={population}/>
-      <SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={populationIncrease}/>
-      <SCBLineChart url="/BE/BE0101/BE0101C/BefArealTathetKon" codes={populationDenseness}/>
-      <SCBLineChart url="/BE/BE0101/BE0101C/BefArealTathetKon" codes={populationLandArea}/>
-      <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
-        new Code('Region', [1,2,3]),
-        new Code('ContentsCode', [8]),
-        new Code('Tid',time),
-      ]}/>
-      <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
-        new Code('Region', [1,2,3]),
-        new Code('ContentsCode', [4]),
-        new Code('Tid',time),
-      ]}/>
-      <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
-        new Code('Region', [1,2,3]),
-        new Code('ContentsCode', [5]),
-        new Code('Tid',time),
-      ]}/>
+      {/*<SCBLineChart url="/BE/BE0101/BE0101A/BefolkningNy" codes={populationIncrease}/>
+       <SCBLineChart url="/BE/BE0101/BE0101C/BefArealTathetKon" codes={populationDenseness}/>
+       <SCBLineChart url="/BE/BE0101/BE0101C/BefArealTathetKon" codes={populationLandArea}/>
+       <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
+       new Code('Region', [1,2,3]),
+       new Code('ContentsCode', [8]),
+       new Code('Tid',time),
+       ]}/>
+       <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
+       new Code('Region', [1,2,3]),
+       new Code('ContentsCode', [4]),
+       new Code('Tid',time),
+       ]}/>
+       <SCBLineChart url="/BE/BE0101/BE0101J/Flyttningar97" codes={[
+       new Code('Region', [1,2,3]),
+       new Code('ContentsCode', [5]),
+       new Code('Tid',time),
+       ]}/>*/}
     </div>)
   }
 }

@@ -1,14 +1,40 @@
 import React, {PropTypes} from 'react';
 import {Line} from "react-chartjs";
 import RandomColor from "randomcolor";
+import ReactTags from 'react-tag-autocomplete';
 
-class SCBLineChart extends React.Component {
+export default class SCBLineChart extends React.Component {
   static baseUrl = "https://api.scb.se/OV0104/v1/doris/sv/ssd";
   static propTypes = {
     url: PropTypes.string.isRequired,
     codes: PropTypes.array.isRequired,
     debug: PropTypes.bool,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      codes: props.codes,
+      tags: [],
+      suggestions: []
+    }
+  }
+
+  handleDelete(i) {
+    var tags = this.state.tags;
+    tags.splice(i, 1);
+    // this.props
+    this.setState(this.state);
+  }
+  handleAddition(tag) {
+    console.log("variable ", tag);
+    var tags = this.state.tags;
+    tags.push({
+      id: tags.length + 1,
+      name: tag
+    });
+    this.setState({ tags: tags });
+  }
 
   //title
   title = "";
@@ -41,28 +67,9 @@ class SCBLineChart extends React.Component {
     });
   };
 
-  componentDidMount() {
-    return this.get('get', this.props.url).then(
-      res => {
-        console.log("scb response ", res, res.title);
-        this.title = res.title;
-        this.querySCB(this.props.url, this.props.codes, res.variables).then(res => {
-          console.log('Restructured query answer ', res, this.codeToValueTextDict);
-          let chartData = {
-            type: 'line',
-            fill: false,
-            labels: res.Tid.keys.splice(0,res.Tid.keys.length/ Object.keys(res.Region.values).length),
-            datasets: this.makeChartData(res.Region.values)
-          };
-          console.log("variable setting chartData", chartData);
-          this.setState({chartData: chartData});
-        });
-      },
-      err => {
-        console.log("err ", err)
-      }
-    );
-  }
+  // componentDidMount() {
+  //   return
+  // }
 
   makeQuerySCB(codes, variables) {
     var codeMap = {};
@@ -149,14 +156,20 @@ class SCBLineChart extends React.Component {
       }
     }
 
+    codeValues[0].values.map((val, index)=> {
+      if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
+      this.codeToValueTextDict[code][val] = codeValues[0].valueTexts[index];
+      return val
+    });
+
     if (index.length) {
       return index.map(val => {
         let valueCode = codeValues[0].values[val];
-        if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
-        this.codeToValueTextDict[code][valueCode] = codeValues[0].valueTexts[val];
         return valueCode
       })
     }
+
+    codeValues[code] = {vals: codeValues[0].values, texts: codeValues[0].valueTexts};
 
     return codeValues[0].values.map((val, index)=> {
       if(!this.codeToValueTextDict[code]) this.codeToValueTextDict[code] = {};
@@ -165,20 +178,76 @@ class SCBLineChart extends React.Component {
     });
   }
 
-  render() {
-    if (this.state) {
-      let ContentCategoryName = Object.keys(this.codeToValueTextDict.ContentsCode).map(val=>{return this.codeToValueTextDict.ContentsCode[val] + ' - '});
-      let n = Object.keys(this.codeToValueTextDict).map(code => {
-        let nn = Object.keys(this.codeToValueTextDict[code]).map((val, index)=>{return (index ? ', ' :'') + this.codeToValueTextDict[code][val]});
-        let style = {'display':'inline-block', 'margin': '0em 1em 0em 1em', 'max-width': '40%'};
-        return <li key={code} style={style}>
-                <h5>{code}: </h5>
-                <h6>{nn}</h6>
-              </li>
+  regionValues = {};
+
+  getContent() {
+    return this.get('get', this.props.url).then(
+      res => {
+        console.log("scb response ", res, res.title);
+        this.title = res.title;
+        this.querySCB(this.props.url, this.props.codes, res.variables).then(res => {
+          console.log('Restructured query answer ', res, this.codeToValueTextDict);
+          let chartData = {
+            type: 'line',
+            fill: false,
+            labels: res.Tid.keys.splice(0,res.Tid.keys.length/ Object.keys(res.Region.values).length),
+            datasets: this.makeChartData(res.Region.values)
+          };
+          console.log("variable setting chartData", chartData);
+          var codeForRegion = props.codes.filter(val=>{return val.code=='Region'});
+          codeForRegion.indexes
+          this.setState({
+            chartData: chartData,
+            codeToValueTextDict: this.codeToValueTextDict,
+          });
+        });
+      },
+      err => {
+        console.log("err ", err)
+      }
+    );
+  }
+
+  componentWillMount() {
+    return this.getContent();
+  }
+
+  makeNameBlock() {
+    let n = this.props.codes.map(cod=>{
+      let nn = (cod.index || this.codeToValueTextDict[cod.code]).map((val, index)=>{
+        let key = Object.keys(this.codeToValueTextDict[cod.code])[val];
+        console.log("variable ", Object.keys(this.codeToValueTextDict[cod.code]), key);
+        return (index ? ', ' :'') + this.codeToValueTextDict[cod.code][key];
       });
+      let style = {'display':'inline-block', 'margin': '0em 1em 0em 1em', 'max-width': '40%'};
+      return <li key={cod.code} style={style}>
+        <h5>{cod.code}: </h5>
+        <h6>{nn}</h6>
+      </li>
+    });
+    let ContentCategoryName = Object.keys(this.codeToValueTextDict.ContentsCode).map(val=>{return this.codeToValueTextDict.ContentsCode[val] + ' - '});
+
+    let suggestions = Object.keys(this.codeToValueTextDict.Region).map((key)=>{
+      return {id: key, name: this.codeToValueTextDict.Region[key]};
+    });
+    console.log("suggestions ", suggestions);
+    let min = 1;
+    return <div>
+      <h4>{ContentCategoryName + this.title}</h4>
+      <ul>{n}</ul>
+      <ReactTags
+        tags={this.state.tags}
+        suggestions={suggestions}
+        handleDelete={this.handleDelete}
+        handleAddition={this.handleAddition}
+        minQueryLength={min}/>
+    </div>
+  }
+
+  render() {
+    if (this.state && this.codeToValueTextDict.ContentsCode) {
       return (<div>
-        <h4>{ContentCategoryName + this.title}</h4>
-        <ul>{n}</ul>
+        {this.makeNameBlock()}
         <Line data={this.state.chartData} options={{responsive: true}}/>
       </div>)
     } else {
@@ -191,5 +260,3 @@ class SCBLineChart extends React.Component {
     }
   }
 }
-
-export default SCBLineChart;
