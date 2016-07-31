@@ -7,7 +7,7 @@ export default class Economy extends React.Component {
   render() {
     var regionIndexes = [177, 18, 127];
     return (<div>
-      <h2>{this.constructor.name}</h2>
+      <h2>Economy</h2>
       <SCBLineChart url="/HE/HE0110/HE0110A/SamForvInk2" codes={[
         new Code('Region', [0, 177, 18, 127]),
         new Code('ContentsCode', [0]),

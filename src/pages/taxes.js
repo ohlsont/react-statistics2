@@ -6,7 +6,7 @@ export default class Taxes extends React.Component {
 
   render() {
     return (<div>
-      <h2>{this.constructor.name}</h2>
+      <h2>Taxes</h2>
       <SCBLineChart url="/OE/OE0701/ForvInkomsterA" codes={[
         new Code('Region', [177, 18, 127]),
         new Code('ContentsCode', [2]),
